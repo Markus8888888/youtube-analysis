@@ -26,12 +26,25 @@ class YouTubeAPI:
             return json.load(f)
 
     def search_videos(self, query: str) -> List[Dict[str, Any]]:
-        dummy_path = os.path.join(os.path.dirname(__file__), "dummy_data.json")
-        data = self.load_dummy_data(dummy_path)
+        """
+        Search videos by matching query primarily in comments,
+        with title as a secondary signal.
+        """
+        q = (query or "").lower()
+        data = self.load_dummy_data(self.dummy_path)
+
         results = []
+
         for video in data:
-            if query.lower() in video.get("title", "").lower():
+            comments = video.get("comments", [])
+            title = video.get("title", "")
+
+            comment_match = any(q in comment.lower() for comment in comments)
+            title_match = q in title.lower()
+
+            if comment_match or title_match:
                 results.append(video)
+
         return results
 
     # def search_videos(self, query: str) -> List[Dict[str, Any]]:
