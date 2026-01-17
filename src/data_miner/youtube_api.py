@@ -36,7 +36,7 @@ class YouTubeAPI:
         results = []
 
         for video in data:
-            comments = video.get("comments", [])
+            comments = video.get("comments") or []
             title = video.get("title", "")
 
             comment_match = any(q in comment.lower() for comment in comments)
