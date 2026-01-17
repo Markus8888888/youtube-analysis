@@ -1,0 +1,33 @@
+[
+  {
+    "title": "Carrot Price Comparison Across Grocery Stores",
+    "channel": "MarketWatch",
+    "views": "15234",
+    "published_at": "2024-01-10",
+    "comments": [
+      "Carrots are way cheaper at Aldi this week",
+      "Walmart raised carrot prices again",
+      "Best carrot deals I've seen in months"
+    ]
+  },
+  {
+    "title": "Weekly Vegetable Prices",
+    "channel": "FoodTrends",
+    "views": "8421",
+    "published_at": "2024-01-08",
+    "comments": [
+      "Carrot prices are insane where I live",
+      "Potatoes stayed the same but carrots doubled"
+    ]
+  },
+  {
+    "title": "Apple Farming Basics",
+    "channel": "GreenFields",
+    "views": "5400",
+    "published_at": "2023-11-20",
+    "comments": [
+      "Nothing about carrots here",
+      "Apples are easier to grow than carrots"
+    ]
+  }
+]
