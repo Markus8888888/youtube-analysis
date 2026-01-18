@@ -18,7 +18,7 @@ class BackEndService:
         self.youtube_api = YouTubeAPI()
         self.ai_brain = AIBrain()
 
-    def fetch_and_process_video(self, url: str, max_comments: int = 500) -> Dict[str, Any]:
+    def fetch_and_process_video(self, url: str, max_comments: int = 5) -> Dict[str, Any]:
         """
         Fetch video data from YouTube API
         

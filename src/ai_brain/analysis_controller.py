@@ -8,7 +8,7 @@ class BackEndService:
         self.ai_brain = AIBrain()
 
     def fetch_and_process_video(self, url):
-        video_record = self.youtube_api.process_video_link(url, max_comments=500)
+        video_record = self.youtube_api.process_video_link(url, max_comments=5)
         return video_record
 
     def analyze_video_with_ai(self, video_record):
