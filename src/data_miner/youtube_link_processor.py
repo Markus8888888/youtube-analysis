@@ -32,11 +32,13 @@ class YouTubeLinkProcessor:
       - fetching video metadata + (optional) comments via YouTube Data API v3
       - returning a normalized record ()
     """
+    #https://youtu.be/6e20xUThn-o?si=E8E2I1q3RawcAfGX
+    #streamlit run app.py
 
     YT_API_BASE = "https://www.googleapis.com/youtube/v3"
 
     def __init__(self, api_key: Optional[str] = None, session: Optional[requests.Session] = None):
-        self.api_key = api_key or os.getenv("YOUTUBE_API_KEY")
+        self.api_key = os.getenv("YOUTUBE_API_KEY")
         if not self.api_key:
             raise ValueError("YOUTUBE_API_KEY is not set (required to fetch data from YouTube).")
         self.session = session or requests.Session()
