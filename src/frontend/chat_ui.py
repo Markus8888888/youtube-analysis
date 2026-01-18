@@ -1,8 +1,9 @@
 import streamlit as st
 
+
 def render_chat_interface():
     """
-    Renders a premium chat interface.
+    Renders a premium chat interface with actual AI responses.
     """
     st.markdown("### 💬 Chat with your Comments")
     st.markdown("")
@@ -24,10 +25,33 @@ def render_chat_interface():
         st.chat_message("user").markdown(prompt)
         st.session_state.messages.append({"role": "user", "content": prompt})
         
-        # Generate AI response
-        response = f"Based on the analyzed comments, regarding **'{prompt}'**: I found that 78% of viewers had positive feedback, with specific praise for production quality. However, some users mentioned concerns about pricing. Would you like me to dive deeper into specific sentiment patterns?"
-        
-        # Display assistant response
-        with st.chat_message("assistant"):
-            st.markdown(response)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+        # Get AI response from backend
+        try:
+            from src.backend.backend_service import BackEndService
+            
+            # Get or create backend service
+            if "backend_service" not in st.session_state:
+                st.session_state.backend_service = BackEndService()
+            
+            backend = st.session_state.backend_service
+            
+            # Generate AI response
+            with st.spinner("Thinking..."):
+                response = backend.get_ai_chat_response(prompt)
+            
+            # Display assistant response
+            with st.chat_message("assistant"):
+                st.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            
+        except ImportError:
+            # Fallback if backend not available
+            response = "I'm sorry, the AI backend is not available. Please check your configuration."
+            with st.chat_message("assistant"):
+                st.markdown(response)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+        except Exception as e:
+            error_msg = f"Sorry, I encountered an error: {str(e)}"
+            with st.chat_message("assistant"):
+                st.markdown(error_msg)
+            st.session_state.messages.append({"role": "assistant", "content": error_msg})

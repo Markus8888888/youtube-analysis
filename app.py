@@ -1,5 +1,10 @@
 import streamlit as st
 import time
+import sys
+import os
+
+# Add project root to path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Page Configuration (Must be the first Streamlit command)
 st.set_page_config(
@@ -101,9 +106,25 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Import frontend modules
-from src.frontend.dashboard import render_dashboard
-from src.frontend.chat_ui import render_chat_interface
+# Import backend services
+try:
+    from src.backend.backend_service import BackEndService
+    from src.frontend.dashboard import render_dashboard
+    from src.frontend.chat_ui import render_chat_interface
+    backend_available = True
+except ImportError as e:
+    st.error(f"Backend import error: {e}")
+    backend_available = False
+
+# Initialize backend service
+@st.cache_resource
+def get_backend_service():
+    """Initialize and cache the backend service"""
+    try:
+        return BackEndService()
+    except Exception as e:
+        st.error(f"Failed to initialize backend: {e}")
+        return None
 
 # --- HEADER ---
 col1, col2 = st.columns([6, 1])
@@ -129,31 +150,54 @@ st.markdown("---")
 
 # --- MAIN APP LOGIC ---
 if analyze_btn and youtube_url:
-    with st.spinner("🔍 Analyzing comments, detecting sentiment, and extracting insights..."):
-        time.sleep(2.5)
-        
-        st.session_state['analytics_data'] = {
-            'total_comments': 452,
-            'spam_count': 34,
-            'controversy_score': 'Medium',
-            'sentiment_score': 0.65,
-            'top_topics': {
-                'Topic': ['Video Quality', 'Sound Design', 'Price Point', 'Editing', 'Intro Length'],
-                'Count': [120, 85, 60, 45, 20]
-            }
-        }
-        st.success("✨ Analysis Complete!")
+    if not backend_available:
+        st.error("❌ Backend services are not available. Please check your configuration.")
+    else:
+        backend = get_backend_service()
+        if backend is None:
+            st.error("❌ Failed to initialize backend service.")
+        else:
+            with st.spinner("🔍 Fetching video data and analyzing comments..."):
+                try:
+                    # Step 1: Fetch video data from YouTube
+                    video_record = backend.fetch_and_process_video(youtube_url)
+                    
+                    if not video_record:
+                        st.error("❌ Failed to fetch video data. Please check the URL.")
+                    else:
+                        st.info(f"✅ Fetched {len(video_record.get('comments', []))} comments from: {video_record.get('title', 'Unknown')}")
+                        
+                        # Step 2: Analyze with AI
+                        with st.spinner("🧠 Analyzing sentiment and extracting insights..."):
+                            analysis = backend.analyze_video_with_ai(video_record)
+                            
+                            if not analysis:
+                                st.error("❌ AI analysis failed.")
+                            else:
+                                # Step 3: Communicate to frontend (updates session_state)
+                                backend.communicate_analysis(analysis)
+                                st.success("✨ Analysis Complete!")
+                                st.rerun()
+                
+                except ValueError as ve:
+                    st.error(f"❌ Invalid input: {ve}")
+                except Exception as e:
+                    st.error(f"❌ Error during analysis: {e}")
+                    st.exception(e)  # Show full traceback in development
 
 # Render content based on analysis state
-if 'analytics_data' in st.session_state:
-    # Tabs for navigation
-    tab1, tab2 = st.tabs(["📊 Dashboard", "💬 AI Chat"])
+if st.session_state.get('analysis_ready', False):
+    analytics_data = st.session_state.get('analytics_data')
     
-    with tab1:
-        render_dashboard(st.session_state['analytics_data'])
-    
-    with tab2:
-        render_chat_interface()
+    if analytics_data:
+        # Tabs for navigation
+        tab1, tab2 = st.tabs(["📊 Dashboard", "💬 AI Chat"])
+        
+        with tab1:
+            render_dashboard(analytics_data)
+        
+        with tab2:
+            render_chat_interface()
 else:
     # Landing Page
     st.markdown("""
