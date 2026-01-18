@@ -6,7 +6,7 @@ class YouTubeAPI:
         self.link_processor = YouTubeLinkProcessor()
         self.data_processor = YouTubeDataProcessor()
 
-    def process_video_link(self, frontend_url, max_comments=50):
+    def process_video_link(self, frontend_url, max_comments=500):
         record = self.link_processor.process_video_link(frontend_url, max_comments=max_comments)
         self.data_processor.add_record(record)
         return record
