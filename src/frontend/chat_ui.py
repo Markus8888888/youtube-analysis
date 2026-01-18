@@ -19,7 +19,7 @@ def render_chat_interface():
             st.markdown(message["content"])
     
     # Chat input
-    if prompt := st.chat_input("Ex: 'What are people saying about the audio quality?'"):
+    if prompt := st.chat_input("Ex: 'What are people saying about the audio quality?"):
         # Display user message
         st.chat_message("user").markdown(prompt)
         st.session_state.messages.append({"role": "user", "content": prompt})
