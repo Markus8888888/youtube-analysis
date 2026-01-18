@@ -15,13 +15,13 @@ class YouTubeAPI:
         self.link_processor = YouTubeLinkProcessor()
         self.data_processor = YouTubeDataProcessor()
 
-    def process_video_link(self, frontend_url, max_comments=500):
+    def process_video_link(self, frontend_url, max_comments=50):
         """
         Process a YouTube URL and return video data with comments
         
         Args:
             frontend_url: YouTube video URL
-            max_comments: Maximum number of comments to fetch (default: 500)
+            max_comments: Maximum number of comments to fetch (default: 50)
             
         Returns:
             Dictionary with video metadata and comments

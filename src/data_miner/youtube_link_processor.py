@@ -32,7 +32,8 @@ class YouTubeLinkProcessor:
       - fetching video metadata + (optional) comments via YouTube Data API v3
       - returning a normalized record ()
     """
-
+    
+    #streamlit run app.py
     YT_API_BASE = "https://www.googleapis.com/youtube/v3"
 
     def __init__(self, api_key: Optional[str] = None, session: Optional[requests.Session] = None):
