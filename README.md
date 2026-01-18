@@ -86,7 +86,7 @@ Use the AI chat assistant to dive deeper:
 
 <div align="center">
 
-**Built with _"Hope for Awareness"_ by the InsightTube Team**
+**Built with _goal of transparency_ by the InsightTube Team**
 
 *Understand the audience, through every comment.*
 
