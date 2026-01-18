@@ -9,22 +9,24 @@ import json
 import time
 from dotenv import load_dotenv
 import google.generativeai as genai
-from gemini_client import GeminiClient
-from chat_manager import ChatManager
-from prompts import (
+
+# FIXED IMPORTS - using correct paths for your structure
+from src.ai_brain.gemini_client import GeminiClient
+from src.ai_brain.chat_manager import ChatManager
+from src.ai_brain.prompts import (
     SENTIMENT_ANALYZER_PROMPT,
     YOUTUBE_ANALYST_BOT,
     QUERY_CATEGORIZER_PROMPT,
     INSIGHT_GENERATOR_PROMPT
 )
-from error_handlers import (
+from src.ai_brain.error_handlers import (
     retry_with_backoff,
     validate_input,
     handle_api_error,
     AIBrainException
 )
-from cache import get_sentiment_cache, get_batch_cache
-from logger import (
+from src.ai_brain.cache import get_sentiment_cache, get_batch_cache
+from src.ai_brain.logger import (
     setup_logging,
     log_api_call,
     log_cache_hit,
@@ -63,12 +65,12 @@ class AIBrain:
         # Setup additional models for specialized tasks
         genai.configure(api_key=self.api_key)
         self.query_categorizer = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name="gemini-2.0-flash-exp",
             system_instruction=QUERY_CATEGORIZER_PROMPT,
             generation_config={"temperature": 0.1}  # Low for categorization precision
         )
         self.insight_generator = genai.GenerativeModel(
-            model_name="gemini-2.5-flash",
+            model_name="gemini-2.0-flash-exp",
             system_instruction=INSIGHT_GENERATOR_PROMPT,
             generation_config={"temperature": 0.7}  # Higher for creative insights
         )
