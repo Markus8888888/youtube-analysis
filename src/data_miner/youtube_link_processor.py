@@ -94,21 +94,26 @@ class YouTubeLinkProcessor:
         }
 
     def extract_video_id(self, url: str) -> Optional[str]:
-        """
-        Supports:
-          - https://www.youtube.com/watch?v=VIDEOID
-          - https://youtu.be/VIDEOID
-          - https://www.youtube.com/shorts/VIDEOID
-          - https://www.youtube.com/embed/VIDEOID
-        """
         if not url or not isinstance(url, str):
             return None
 
         url = url.strip()
         parsed = urlparse(url)
-
         host = (parsed.netloc or "").lower()
         path = parsed.path or ""
+
+        is_youtube = (
+            host == "youtu.be"
+            or host.endswith(".youtu.be")
+            or host == "youtube.com"
+            or host.endswith(".youtube.com")
+            or host == "m.youtube.com"
+            or host == "www.youtube.com"
+        )
+
+        # Only accept known YouTube hosts
+        if not is_youtube:
+            return None
 
         # youtu.be/VIDEOID
         if "youtu.be" in host:
@@ -116,20 +121,14 @@ class YouTubeLinkProcessor:
             return vid or None
 
         # youtube.com/watch?v=VIDEOID
-        if "youtube.com" in host:
-            qs = parse_qs(parsed.query or "")
-            if "v" in qs and qs["v"]:
-                return qs["v"][0]
+        qs = parse_qs(parsed.query or "")
+        if "v" in qs and qs["v"]:
+            return qs["v"][0]
 
-            # youtube.com/shorts/VIDEOID or /embed/VIDEOID
-            m = re.match(r"^/(shorts|embed)/([^/?#]+)", path)
-            if m:
-                return m.group(2)
-
-        # Fallback: find v=VIDEOID anywhere
-        m2 = re.search(r"[?&]v=([^&]+)", url)
-        if m2:
-            return m2.group(1)
+        # youtube.com/shorts/VIDEOID or /embed/VIDEOID
+        m = re.match(r"^/(shorts|embed)/([^/?#]+)", path)
+        if m:
+            return m.group(2)
 
         return None
 
